@@ -1,4 +1,4 @@
-#CRUD
+#CRUD for Symfony2
 
 ##Modified Symfony2 CRUD generator
 
