@@ -1,0 +1,75 @@
+
+    /**
+     * Deletes a {{ entity }} entity.
+     *
+{% if 'annotation' == format %}
+     * @Route("/{{ route_prefix }}/{id}/remove", name="{{ route_name_prefix }}_delete")
+{% endif %}
+     */
+    public function deleteAction(Request $request, $id)
+    {
+        $this->getDoctrine()->getManager()->getFilters()->disable('not_deleted');
+        $form = $this->createDeleteForm($id);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+
+            if (!$entity) {
+                throw $this->createNotFoundException('Unable to find {{ entity }} entity.');
+            }
+
+            $entity->setDeleted(new \DateTime());
+            $em->flush();
+            $this->get('session')->getFlashBag()->add('success', 'flash.delete.success');
+        } else {
+            $this->get('session')->getFlashBag()->add('error', 'flash.delete.error');
+        }
+
+        return $this->redirect($this->generateUrl('{{ route_name_prefix }}'));
+    }
+
+    /**
+     * Creates a form to delete a {{ entity }} entity by id.
+     *
+     * @param mixed $id The entity id
+     *
+     */
+    private function createDeleteForm($id)
+    {
+        return $this->createFormBuilder(array('id' => $id))
+            ->add('id', 'hidden')
+            ->getForm()
+        ;
+    }
+
+    /**
+     * Recovers a {{ entity }} entity.
+     *
+{% if 'annotation' == format %}
+     * @Route("/{{ route_prefix }}/{id}/undelete", name="{{ route_name_prefix }}_undelete")
+{% endif %}
+     */
+    public function undeleteAction(Request $request, $id)
+    {
+        $this->getDoctrine()->getManager()->getFilters()->disable('not_deleted');
+
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find {{ entity }} entity.');
+        }
+
+        $entity->setDeleted();
+        $em->flush();
+
+        if (!empty($entity)) {
+            $this->get('session')->getFlashBag()->add('success', 'flash.undelete.success');
+        } else {
+            $this->get('session')->getFlashBag()->add('error', 'flash.undelete.error');
+        }
+
+        return $this->redirect($this->generateUrl('{{ route_name_prefix }}'));
+    }

@@ -1,0 +1,174 @@
+
+    /**
+     * Lists all {{ entity }} entities.
+     *
+{% if 'annotation' == format %}
+     * @Route("/{{ route_prefix }}/index", name="{{ route_name_prefix }}")
+     * @Template()
+{% endif %}
+     */
+    public function indexAction()
+    {
+        $this->getDoctrine()->getManager()->getFilters()->disable('not_deleted');
+        list($filterForm, $queryBuilder) = $this->filter();
+
+        list($entities, $pagerHtml) = $this->paginator($queryBuilder);
+
+{% if 'annotation' == format %}
+        return array(
+            'entities' => $entities,
+            'pagerHtml' => $pagerHtml,
+            'filterForm' => $filterForm->createView(),
+        );
+{% else %}
+        return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:index.html.twig', array(
+            'entities' => $entities,
+            'pagerHtml' => $pagerHtml,
+            'filterForm' => $filterForm->createView(),
+        ));
+{% endif %}
+    }
+
+    /**
+    * Create filter form and process filter request.
+    *
+    */
+    protected function filter()
+    {
+        $request = $this->getRequest();
+        $session = $request->getSession();
+        $filterForm = $this->createForm(new {{ entity }}FilterType());
+        $em = $this->getDoctrine()->getManager();
+        $queryBuilder = $em->getRepository('{{ bundle }}:{{ entity }}')->createQueryBuilder('e');
+        $queryBuilderSaved = clone $queryBuilder;
+
+        if ($session->has('sort-field') && $session->has('sort-order')) {
+          $unfold = explode('.', $session->get('sort-field'));
+          $e = array('e');
+          if (count($unfold) > 1) {
+            // advanced field
+            for ($a = 0; $a < (count($unfold) - 1); $a++) {
+              $alias = $unfold[$a] . '_' . $a;
+              $queryBuilder->leftJoin($e[$a] . '.' . $unfold[$a], $alias);
+              $e[] = $alias;
+            }
+            $queryBuilder->orderBy((end($e) . '.' . end($unfold)), $session->get('sort-order'));
+          } else {
+            // simple field
+            $queryBuilder->orderBy(('e.' . $session->get('sort-field')), $session->get('sort-order'));
+          }
+          // testing query syntax & semantic
+          try {
+            $queryBuilder->getQuery()->getResult();
+          } catch (\Exception $e) {
+            $queryBuilder = $queryBuilderSaved;
+          }
+        }
+
+        // Reset filter
+        if ($request->get('filter_action') == 'reset') {
+            $session->remove('{{ entity }}ControllerFilter');
+        }
+
+        // Filter action
+        if ($request->get('filter_action') == 'filter') {
+            // Bind values from the request
+            $filterForm->bind($request);
+
+            if ($filterForm->isValid()) {
+                // Build the query from the given form object
+                $this->get('lexik_form_filter.query_builder_updater')->addFilterConditions($filterForm, $queryBuilder);
+                // Save filter to session
+                $filterData = $filterForm->getData();
+                $session->set('{{ entity }}ControllerFilter', $filterData);
+            }
+        } else {
+            // Get filter from session
+            if ($session->has('{{ entity }}ControllerFilter')) {
+                $filterData = $session->get('{{ entity }}ControllerFilter');
+                try {
+                  $filterForm = $this->createForm(new {{ entity }}FilterType(), $filterData);
+                  $this->get('lexik_form_filter.query_builder_updater')->addFilterConditions($filterForm, $queryBuilder);
+                } catch (\Exception $e) {
+                  $session->clear();
+
+                  return array($filterForm, $queryBuilder);
+                }
+            }
+        }
+
+        return array($filterForm, $queryBuilder);
+    }
+
+    /**
+    * Get results from paginator and get paginator view.
+    *
+    */
+    protected function paginator($queryBuilder)
+    {
+        // Paginator
+        $adapter = new DoctrineORMAdapter($queryBuilder);
+        $pagerfanta = new Pagerfanta($adapter);
+        /** @var $queryBuilder QueryBuilder */
+        $cntResult = count($queryBuilder->getQuery()->getArrayResult());
+        if (!$cntResult) {
+          // zero hits
+        } else {
+          if (!empty($queryBuilder->getDQLPart('where'))) {
+            $pagerfanta->setMaxPerPage($cntResult);
+          } else {
+            if ($cntResult >= 20) {
+              $pagerfanta->setMaxPerPage(ceil($cntResult / 5));
+            } else {
+              $pagerfanta->setMaxPerPage(10);
+            }
+          }
+        }
+        $currentPage = $this->getRequest()->get('page', 1);
+        $pagerfanta->setCurrentPage($currentPage);
+        $entities = $pagerfanta->getCurrentPageResults();
+
+        // Paginator - route generator
+        $me = $this;
+        $routeGenerator = function($page) use ($me)
+        {
+            return $me->generateUrl('{{ route_name_prefix }}', array('page' => $page));
+        };
+
+        // Paginator - view
+        $translator = $this->get('translator');
+        $view = new TwitterBootstrapView();
+        $pagerHtml = $view->render($pagerfanta, $routeGenerator, array(
+            'proximity' => 3,
+            'prev_message' => $translator->trans('views.index.pagprev', array(), 'VaszevCrudBundle'),
+            'next_message' => $translator->trans('views.index.pagnext', array(), 'VaszevCrudBundle'),
+        ));
+
+        return array($entities, $pagerHtml);
+    }
+
+    /**
+     * Lists all {{ entity }} sorted by...
+{% if 'annotation' == format %}
+     * @Route("/{{ route_prefix }}/sort/{field}", name="{{ route_name_prefix }}_sort", defaults={"field"="id"})
+{% endif %}
+     */
+  public function sortAction($field, Request $request) {
+
+    $session = $request->getSession();
+    if ($session->has('sort-field') && $session->has('sort-order')) {
+      $storedField = $session->get('sort-field');
+      $storedOrder = $session->get('sort-order');
+      if ($storedField == $field) {
+        $session->set('sort-order', ($storedOrder == 'ASC' ? 'DESC' : 'ASC'));
+
+        return $this->forward('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:index', array());
+      }
+    }
+
+    $session->set('sort-field', $field);
+    $session->set('sort-order', 'ASC');
+
+    return $this->forward('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:index', array());
+  }
+

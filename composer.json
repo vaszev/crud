@@ -1,0 +1,32 @@
+{
+  "name": "vaszev/crud-bundle",
+  "description": "",
+  "keywords": [
+    "crud",
+    "generator"
+  ],
+  "homepage": "https://github.com/vaszev/crud",
+  "type": "symfony-bundle",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Roland Bodnar",
+      "email": "vaszev@gmail.com"
+    }
+  ],
+  "require": {
+    "sensio/generator-bundle": "~2.0",
+    "pagerfanta/pagerfanta": "1.0.*@dev",
+    "lexik/form-filter-bundle": "~3.0"
+  },
+  "minimum-stability": "dev",
+  "autoload": {
+    "psr-0": {
+      "Vaszev\\CrudBundle": ""
+    }
+  },
+  "target-dir": "Vaszev/CrudBundle",
+  "config": {
+    "preferred-install": "dist"
+  }
+}

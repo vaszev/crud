@@ -1,0 +1,3 @@
+VaszevCrudGeneratorBundle_homepage:
+    pattern:  /hello/{name}
+    defaults: { _controller: VaszevCrudBundle:Default:index }
