@@ -4,7 +4,7 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/index", name="{{ route_name_prefix }}")
-     * @Template()
+     * @Template(::{{ bundle }}:{{ entity }}:list.html.twig)
 {% endif %}
      */
     public function indexAction()

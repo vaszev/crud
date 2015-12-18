@@ -4,7 +4,7 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/{id}/show", name="{{ route_name_prefix }}_show")
-     * @Template()
+     * @Template(::{{ bundle }}:{{ entity }}:show.html.twig)
 {% endif %}
      */
     public function showAction($id)

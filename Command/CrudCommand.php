@@ -24,7 +24,8 @@ class CrudCommand extends GenerateDoctrineCrudCommand {
 
 
   protected function createGenerator($bundle = null) {
-    return new VaszevCrudGenerator($this->getContainer()->get('filesystem'));
+    $rootDir = $this->getContainer()->getParameter('kernel.root_dir');
+    return new VaszevCrudGenerator($this->getContainer()->get('filesystem'), $rootDir);
   }
 
 

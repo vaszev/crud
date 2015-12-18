@@ -4,7 +4,7 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/{id}/edit", name="{{ route_name_prefix }}_edit")
-     * @Template()
+     * @Template(::{{ bundle }}:{{ entity }}:edit.html.twig)
 {% endif %}
      */
     public function editAction($id)

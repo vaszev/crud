@@ -36,13 +36,13 @@ orm:
 ###backend header-footer
 Let's create the following files:
 
-**app\Resources\vaszevCrudMenu.html.twig** (contains your custom styles and the backend menu too)
+**app\Resources\views\vaszevCrudMenu.html.twig** (contains your custom styles and the backend menu too)
 ```twig
 {% block stylesheets_sub %}{% endblock %}
 {% block menu %}{% endblock %}
 ```
 
-**app\Resources\vaszevCrudFooter.html.twig** (your personal/company informations goes here)
+**app\Resources\views\vaszevCrudFooter.html.twig** (your personal/company informations goes here)
 ```twig
 <footer></footer>
 ```
