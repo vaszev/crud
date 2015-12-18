@@ -4,7 +4,7 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/{id}/update", name="{{ route_name_prefix }}_update")
-     * @Template("::{{ bundle }}:{{ entity }}:update.html.twig")
+     * @Template("::{{ entity|lower }}:edit.html.twig")
 {% endif %}
      */
     public function updateAction(Request $request, $id)
