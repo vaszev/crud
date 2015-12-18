@@ -15,7 +15,7 @@
     }
   ],
   "require": {
-    "sensio/generator-bundle": ">=2.5.0",
+    "sensio/generator-bundle": ">2.2.0",
     "pagerfanta/pagerfanta": "1.0.*@dev",
     "lexik/form-filter-bundle": "~3.0"
   },
