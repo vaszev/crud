@@ -1,6 +1,6 @@
 #CRUD
 
-##Modified Symfony2 CRUD generator
+##Modified Symfony3 CRUD generator
 
 Many thanks to Jordi Llonch for his CrudGeneratorBundle (https://github.com/jordillonch/CrudGeneratorBundle) that I've could modify. This bundle has a nice backend view for your entities. You can filtering, paginating, ordering, soft-deleting your data.
 
@@ -9,7 +9,7 @@ https://packagist.org/packages/vaszev/crud-bundle
 
 via **composer**:
 ```
-$ composer install "vaszev/crud-bundle":"dev-master"
+$ composer install "vaszev/crud-bundle":"~2.0"
 ```
 
 in your **AppKernel.php**:
