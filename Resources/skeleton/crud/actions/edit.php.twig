@@ -4,7 +4,7 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/{id}/edit", name="{{ route_name_prefix }}_edit")
-     * @Template("::{{ entity|lower }}:edit.html.twig")
+     * @Template("{{ entity|lower }}/edit.html.twig")
 {% endif %}
      */
     public function editAction($id)
@@ -18,7 +18,9 @@
             throw $this->createNotFoundException('Unable to find {{ entity }} entity.');
         }
 
-        $editForm = $this->createForm(new {{ entity_class }}Type(), $entity);
+        $editForm = $this->createForm({{ entity_class }}Type::class, $entity, [
+          'action'=>$this->generateUrl('{{ route_name_prefix }}_update',['id'=>$id]),
+        ]);
         $deleteForm = $this->createDeleteForm($id);
 
 {% if 'annotation' == format %}

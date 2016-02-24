@@ -9,7 +9,7 @@
 {{        "{{ parent() }}" }}
 {{        "{% block stylesheets_sub %}{% endblock %}" }}
 {{      "{% endblock %}" }}
-{{      "{% include '::vaszevCrudMenu.html.twig' %}" }}
+{{      "{% include 'vaszevCrudMenu.html.twig' %}" }}
 {{    "{% endblock %}" }}
 
 {{ "{% block page %}" }}
@@ -23,7 +23,15 @@
             <label class="control-label">{{ field|capitalize }}</label>
             <div class="controls">
                 {%- if metadata.type in ['date', 'datetime'] %}
-                <span class="input-xlarge uneditable-input">{{ '{{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}' }}</span>
+              <span class="input-xlarge uneditable-input">
+                  {{ '
+                {% if entity.'~ field|replace({'_': ''}) ~' is not empty %}
+                  {{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}
+                {% else %}
+                  -
+                {% endif %}
+                ' }}
+                </span>
                 {%- else %}
                 <span class="input-xlarge uneditable-input">{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</span>
                 {%- endif %}
@@ -36,6 +44,6 @@
 {% set hide_edit, hide_delete = false, false %}
 {% include 'crud/views/others/record_actions.html.twig.twig' %}
 
-{{ "{% include '::vaszevCrudFooter.html.twig' %}" }}
+{{ "{% include 'vaszevCrudFooter.html.twig' %}" }}
 
 {{ "{% endblock %}" }}

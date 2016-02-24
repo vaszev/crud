@@ -4,13 +4,13 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/index", name="{{ route_name_prefix }}")
-     * @Template("::{{ entity|lower }}:index.html.twig")
+     * @Template("{{ entity|lower }}/index.html.twig")
 {% endif %}
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         $this->getDoctrine()->getManager()->getFilters()->disable('not_deleted');
-        list($filterForm, $queryBuilder) = $this->filter();
+        list($filterForm, $queryBuilder) = $this->filter($request);
 
         list($entities, $pagerHtml) = $this->paginator($queryBuilder);
 
@@ -33,11 +33,12 @@
     * Create filter form and process filter request.
     *
     */
-    protected function filter()
+    protected function filter(Request $request)
     {
-        $request = $this->getRequest();
         $session = $request->getSession();
-        $filterForm = $this->createForm(new {{ entity }}FilterType());
+        $filterForm = $this->createForm({{ entity }}FilterType::class, null, [
+          'action'=>$this->generateUrl('{{ route_name_prefix }}'),
+        ]);
         $em = $this->getDoctrine()->getManager();
         $queryBuilder = $em->getRepository('{{ bundle }}:{{ entity }}')->createQueryBuilder('e');
         $queryBuilderSaved = clone $queryBuilder;
@@ -73,7 +74,7 @@
         // Filter action
         if ($request->get('filter_action') == 'filter') {
             // Bind values from the request
-            $filterForm->bind($request);
+            $filterForm->handleRequest($request);
 
             if ($filterForm->isValid()) {
                 // Build the query from the given form object
@@ -87,7 +88,9 @@
             if ($session->has('{{ entity }}ControllerFilter')) {
                 $filterData = $session->get('{{ entity }}ControllerFilter');
                 try {
-                  $filterForm = $this->createForm(new {{ entity }}FilterType(), $filterData);
+                  $filterForm = $this->createForm({{ entity }}FilterType::class, $filterData, [
+                    'action'=>$this->generateUrl('{{ route_name_prefix }}'),
+                  ]);
                   $this->get('lexik_form_filter.query_builder_updater')->addFilterConditions($filterForm, $queryBuilder);
                 } catch (\Exception $e) {
                   $session->clear();
@@ -124,7 +127,7 @@
             }
           }
         }
-        $currentPage = $this->getRequest()->get('page', 1);
+        $currentPage = Request::createFromGlobals()->get('page', 1);
         $pagerfanta->setCurrentPage($currentPage);
         $entities = $pagerfanta->getCurrentPageResults();
 

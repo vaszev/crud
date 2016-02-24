@@ -1,3 +1,4 @@
+{% set doNotShown = ['created','edited','deleted'] %}
 {{ "{% extends 'VaszevCrudBundle::layout.html.twig' %}" }}
 
 {{ "{% block title %}" }}
@@ -9,7 +10,7 @@
 {{        "{{ parent() }}" }}
 {{        "{% block stylesheets_sub %}{% endblock %}" }}
 {{      "{% endblock %}" }}
-{{      "{% include '::vaszevCrudMenu.html.twig' %}" }}
+{{      "{% include 'vaszevCrudMenu.html.twig' %}" }}
 {{    "{% endblock %}" }}
 
 {{ "{% block page %}" }}
@@ -42,12 +43,12 @@
     <div class="span12">
         <div id="filters" class="collapse">
 
-            <form class="well" action="{{ "{{ path('"~ route_name_prefix ~"') }}" }}" method="get" {{ "{{ form_enctype(filterForm) }}" }}>
-
+            {#<form class="well" action="{{ "{{ path('"~ route_name_prefix ~"') }}" }}" method="get" {{ "{{ form_enctype(filterForm) }}" }}>#}
+              {{ "{{ form_start(filterForm,{'attr':{'class':'well'}}) }}" }}
                 {%- for field, metadata in fields %}
-
-                {{ "{{ form_row(filterForm." ~ field ~ ") }}" }}
-
+                  {% if field not in doNotShown %}
+                    {{ "{{ form_row(filterForm." ~ field ~ ") }}" }}
+                  {% endif %}
                 {%- endfor %}
 
                 {{ "{{ form_rest(filterForm) }}" }}
@@ -56,7 +57,8 @@
                     <button type="submit" name="filter_action" value="filter">{{ "{{ 'views.index.filter'|trans({}, 'VaszevCrudBundle') }}" }}</button>
                     <button type="submit" name="filter_action" value="reset">{{ "{{ 'views.index.reset'|trans({}, 'VaszevCrudBundle') }}" }}</button>
                 </p>
-            </form>
+              {{ "{{ form_end(filterForm) }}" }}
+            {#</form>#}
         </div>
     </div>
 
@@ -66,9 +68,9 @@
     <thead>
         <tr>
         {%- for field, metadata in fields %}
-
+          {% if field != "created" %}
             <th><a href="{{ "{{ path('" ~ route_name_prefix ~ "_sort', {'field':'" ~ field ~ "'}) }}" }}">{{ field|capitalize }}</a></th>
-
+          {% endif %}
         {%- endfor %}
 
             <th>{{ "{{ 'views.index.actions'|trans({}, 'VaszevCrudBundle') }}" }}</th>
@@ -79,13 +81,17 @@
         <tr>
 
     {%- for field, metadata in fields %}
-        {%- if loop.first and ('show' in actions) %}
+      {% if field != "created" %}
+        {%- if metadata.type in ['date', 'datetime'] %}
 
-            <td>{{ '{{ entity.'~ field|replace({'_': ''}) ~' }}' }}</td>
-
-        {%- elseif metadata.type in ['date', 'datetime'] %}
-
-            <td>{{ '{% if entity.'~ field|replace({'_': ''}) ~' %}{{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}{% endif %}' }}</td>
+            <td>{{ '
+              {% if entity.'~ field|replace({'_': ''}) ~' is not empty %}
+                {{ entity.'~ field|replace({'_': ''}) ~'|date(\'Y-m-d H:i:s\') }}
+              {% else %}
+                -
+              {% endif %}
+              ' }}
+            </td>
 
         {%- else %}
 
@@ -100,6 +106,7 @@
             </td>
 
         {%- endif %}
+      {% endif %}
     {%- endfor %}
 
         </tr>
@@ -121,6 +128,6 @@
     {% endif %}
 </div>
 
-{{ "{% include '::vaszevCrudFooter.html.twig' %}" }}
+{{ "{% include 'vaszevCrudFooter.html.twig' %}" }}
 
 {{ "{% endblock %}" }}

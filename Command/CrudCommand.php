@@ -18,7 +18,7 @@ class CrudCommand extends GenerateDoctrineCrudCommand {
     parent::configure();
 
     $this->setName('vaszev:generate:crud');
-    $this->setDescription('Modified Symfony2 CRUD generator.');
+    $this->setDescription('Modified Symfony3 CRUD generator.');
   }
 
 

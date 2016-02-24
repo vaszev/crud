@@ -4,7 +4,7 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/{id}/update", name="{{ route_name_prefix }}_update")
-     * @Template("::{{ entity|lower }}:edit.html.twig")
+     * @Template("{{ entity|lower }}/edit.html.twig")
 {% endif %}
      */
     public function updateAction(Request $request, $id)
@@ -19,7 +19,9 @@
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createForm(new {{ entity_class }}Type(), $entity);
+        $editForm = $this->createForm({{ entity_class }}Type::class, $entity, [
+          'action'=>$this->generateUrl('{{ route_name_prefix }}_update',['id'=>$id]),
+        ]);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {

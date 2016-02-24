@@ -9,7 +9,9 @@
     public function deleteAction(Request $request, $id)
     {
         $this->getDoctrine()->getManager()->getFilters()->disable('not_deleted');
-        $form = $this->createDeleteForm($id);
+        $form = $this->createDeleteForm($id,null,[
+          'action'=>$this->generateUrl('{{ route_name_prefix }}_delete',['id'=>$id]),
+        ]);
         $form->handleRequest($request);
 
         if ($form->isValid()) {
@@ -39,7 +41,7 @@
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder(array('id' => $id))
-            ->add('id', 'hidden')
+            ->add('id', 'Symfony\Component\Form\Extension\Core\Type\HiddenType')
             ->getForm()
         ;
     }

@@ -9,23 +9,25 @@
 {{        "{{ parent() }}" }}
 {{        "{% block stylesheets_sub %}{% endblock %}" }}
 {{      "{% endblock %}" }}
-{{      "{% include '::vaszevCrudMenu.html.twig' %}" }}
+{{      "{% include 'vaszevCrudMenu.html.twig' %}" }}
 {{    "{% endblock %}" }}
 
 {{ "{% block page %}" }}
 
 <h1>{{ "{{ 'views.new.creation'|trans({'%entity%': '" }}{{ entity }}{{ "'}, 'VaszevCrudBundle') }}" }}</h1>
 
-<form class="well" action="{{ "{{ path('"~ route_name_prefix ~"_create') }}" }}" method="post" {{ "{{ form_enctype(form) }}" }}>
+{#<form class="well" action="{{ "{{ path('"~ route_name_prefix ~"_create') }}" }}" method="post" {{ "{{ form_enctype(form) }}" }}>#}
+    {{ "{{ form_start(form,{'attr':{'class':'well'}}) }}" }}
     {{ "{{ form_widget(form) }}" }}
     <p>
         <button type="submit" class="btn btn-success">{{ "{{ 'views.new.create'|trans({}, 'VaszevCrudBundle') }}" }}</button>
     </p>
-</form>
+    {{ "{{ form_end(form) }}" }}
+{#</form>#}
 
 {% set hide_edit, hide_delete = true, true %}
 {% include 'crud/views/others/record_actions.html.twig.twig' %}
 
-{{ "{% include '::vaszevCrudFooter.html.twig' %}" }}
+{{ "{% include 'vaszevCrudFooter.html.twig' %}" }}
 
 {{ "{% endblock %}" }}

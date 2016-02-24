@@ -4,13 +4,15 @@
      *
 {% if 'annotation' == format %}
      * @Route("/{{ route_prefix }}/new", name="{{ route_name_prefix }}_new")
-     * @Template("::{{ entity|lower }}:new.html.twig")
+     * @Template("{{ entity|lower }}/new.html.twig")
 {% endif %}
      */
     public function newAction()
     {
         $entity = new {{ entity_class }}();
-        $form   = $this->createForm(new {{ entity_class }}Type(), $entity);
+        $form   = $this->createForm({{ entity_class }}Type::class, $entity, [
+          'action'=>$this->generateUrl('{{ route_name_prefix }}_create'),
+        ]);
 
 {% if 'annotation' == format %}
         return array(
