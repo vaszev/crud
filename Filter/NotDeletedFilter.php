@@ -11,7 +11,7 @@ class NotDeletedFilter extends SQLFilter {
    * @return string The constraint SQL if there is available, empty string otherwise.
    */
   public function addFilterConstraint(ClassMetadata $targetEntity, $targetTableAlias) {
-    $filter = $targetEntity->reflClass->implementsInterface('AppBundle\Entity\SoftDeleteInterface') ? $targetTableAlias . '.deleted IS NULL' : '';
+    $filter = $targetEntity->reflClass->implementsInterface('Vaszev\CrudBundle\Entity\SoftDeleteInterface') ? $targetTableAlias . '.deleted IS NULL' : '';
     return $filter;
   }
 }
