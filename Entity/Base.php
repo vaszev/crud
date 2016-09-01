@@ -159,37 +159,4 @@
       return $this;
     }
 
-
-
-    /**
-     * @param bool   $turnOff
-     * @param string $id
-     * @param bool   $exception
-     * @return null
-     * @throws \Exception
-     */
-    protected function switchDeletedFilter($turnOff = false, $id = "default", $exception = false) {
-      static $baseState = [];
-      if ( ! property_exists($this, 'em')) {
-        if ($exception) {
-          throw new \Exception('EntityManager does not initialized.');
-        } else {
-          return null;
-        }
-      }
-      if ( ! array_key_exists($id, $baseState)) {
-        // save state at first time
-        $baseState[$id] = $this->em->getFilters()->isEnabled('not_deleted');
-      }
-      $filterOn = $this->em->getFilters()->isEnabled('not_deleted');
-      if ($turnOff && $filterOn) {
-        // turn off now
-        $this->em->getFilters()->disable('not_deleted');
-      }
-      if ( ! $turnOff && $baseState[$id] && ! $filterOn) {
-        // turn on back
-        $this->em->getFilters()->enable('not_deleted');
-      }
-    }
-
   }
